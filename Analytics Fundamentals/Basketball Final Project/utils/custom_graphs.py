@@ -51,3 +51,29 @@ def make_distplot_subplot(df, ncols=2):
     ).update_traces(showlegend=False)
 
     return fig
+
+
+def make_scatter_target_subplots(df, ncols=2):
+    nrows = ceil((len(df.columns)) / ncols)
+    fig = make_subplots(
+        rows=nrows,
+        cols=ncols,
+        subplot_titles=[f'{column} vs Salary' for column in df.columns[:-1]],
+        vertical_spacing=0.05,
+        horizontal_spacing=0.08
+    )
+
+    for v in range(len(df.columns)-1):
+        colum = df.columns[v]
+        index = "" if v == 0 else f'{v+1}'
+        fig['layout'][f'xaxis{index}']['title'] = colum
+        fig['layout'][f'yaxis{index}']['title'] = "Salary"
+        for t in px.scatter(df, x=df[colum], y="Salary").data:
+            fig.add_trace(t, row=(v//ncols)+1, col=(v % ncols)+1)
+
+    fig.update_layout(
+        margin={"l": 0, "r": 0, "t": 25, "b": 0},
+        height=nrows*400,
+    ).update_traces(showlegend=False)
+
+    return fig
