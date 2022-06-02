@@ -1,10 +1,21 @@
+"""Custom functions to graph"""
 from plotly.subplots import make_subplots
 from math import ceil
 import plotly.express as px
 import plotly.figure_factory as ff
+import matplotlib.pyplot as plt
 
 
 def make_box_subplots(df, ncols=2):
+    """Make box plots
+
+    Args:
+        df (pandas.DataFrame): DataFrame
+        ncols (int): Number of columns
+    Returns:
+        plotly.graph_objects.Figure: Box plot figure
+
+    """
     nrows = ceil((len(df.columns)) / ncols)
     fig = make_subplots(
         rows=nrows,
@@ -26,6 +37,15 @@ def make_box_subplots(df, ncols=2):
 
 
 def make_distplot_subplot(df, ncols=2):
+    """Make dist plots
+
+    Args:
+        df (pandas.DataFrame): DataFrame
+        ncols (int): Number of columns
+
+    Returns:
+        plotly.graph_objects.Figure: Distplot figure
+    """
     nrows = ceil((len(df.columns)) / ncols)
     fig = make_subplots(
         rows=nrows,
@@ -54,6 +74,15 @@ def make_distplot_subplot(df, ncols=2):
 
 
 def make_scatter_target_subplots(df, ncols=2):
+    """Make scatter plots
+
+    Args:
+        df (pandas.DataFrame): DataFrame
+        ncols (int): Number of columns
+
+    Returns:
+        plotly.graph_objects.Figure: Scatter plot figure
+    """
     nrows = ceil((len(df.columns)) / ncols)
     fig = make_subplots(
         rows=nrows,
@@ -77,3 +106,27 @@ def make_scatter_target_subplots(df, ncols=2):
     ).update_traces(showlegend=False)
 
     return fig
+
+
+def biplot(data, loadings, index1, index2, labels=None):
+    plt.figure(figsize=(15, 7))
+    xs = data[:, index1]
+    ys = data[:, index2]
+    n = loadings.shape[0]
+    scalex = 1.0/(xs.max() - xs.min())
+    scaley = 1.0/(ys.max() - ys.min())
+    plt.scatter(xs*scalex, ys*scaley)
+    for i in range(n):
+        plt.arrow(0, 0, loadings[i, index1],
+                  loadings[i, index2], color='red', alpha=0.5)
+        if labels is None:
+            plt.text(loadings[i, index1] * 1.15, loadings[i, index2] *
+                     1.15, "Var"+str(i+1), color='g', ha='center', va='center')
+        else:
+            plt.text(loadings[i, index1] * 1.15, loadings[i, index2]
+                     * 1.15, labels[i], color='g', ha='center', va='center')
+    plt.xlim(-1, 1)
+    plt.ylim(-1, 1)
+    plt.xlabel("PC{}".format(index1))
+    plt.ylabel("PC{}".format(index2))
+    plt.grid()

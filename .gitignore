@@ -161,3 +161,4 @@ cython_debug/
 
 # VSCode
 .vscode
+**/**/Baseball Salary Predict - Examples.ipynb
